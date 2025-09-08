@@ -1,0 +1,126 @@
+{
+  "header": {
+    "name": "Keshav Arri",
+    "phone": "647-227-1538",
+    "email": "arri@uwindsor.ca",
+    "location": "Ontario, Canada",
+    "linkedin": "https://linkedin.com/in/keshav-arri",
+    "portfolio": "https://keshavarri.com",
+    "github": "https://github.com/keshavarri"
+  },
+  "technical_skills": {
+    "Languages": "Python, SQL, C/C++, Java, Bash/Shell Scripting, HTML, CSS",
+    "Databases": "MySQL, PostgreSQL, MongoDB, Pinecone, Weaviate, Milvus, Snowflake, Redis",
+    "AI/ML": "PyTorch, TensorFlow, XGBoost, Hugging Face, LangChain, LangGraph, OpenCV, RAG",
+    "Cloud/Dev": "AWS, Azure, GCP, Docker, FastAPI, React, Git, CI/CD Pipelines, RESTful APIs",
+    "Related skills": "ETL Pipelines, Fine-tuning LLMs, Prompt Engineering, Data Modelling, A/B Testing, NER, OCR, Socket Programming, Data Structures & Algorithms"
+  },
+  "education": [
+    {
+      "degree": "Master of Applied Computing — Specialization: Artificial Intelligence",
+      "school": "University of Windsor",
+      "location": "Ontario, Canada",
+      "dates": "Jan 2025 - Present",
+      "gpa": "",
+      "notes": [
+        "Final Semester Requires a 4 to 8 months Internship Starting Jan 2026"
+      ]
+    },
+    {
+      "degree": "Bachelor of Technology in Computer Science and Engineering",
+      "school": "Guru Nanak Dev Engineering College",
+      "location": "Punjab, India",
+      "dates": "Sep 2020 - Sep 2024",
+      "gpa": "SGPA 8.13/10",
+      "notes": []
+    }
+  ],
+  "experience": [
+    {
+      "title": "AI ML Engineer",
+      "company": "Slideoo",
+      "location": "Bangalore, India",
+      "dates": "Feb 2024 - Feb 2025",
+      "bullets": [
+        "Engineered multimodal pipeline converting text, documents, websites and YouTube URLs into PowerPoint presentations, achieving 83%-time reduction to 30 seconds vs competitor's 3-min turnaround, helping secure seed funding.",
+        "Scaled system to handle 10x traffic growth by implementing distributed architecture using OpenAI GPT and Claude model with multi-threading across Azure Web Apps, AWS Lambda and Bedrock, achieving 99% uptime.",
+        "Improved LLM response accuracy by 25% and reduced API costs by 40% through optimized prompt engineering, few-shot learning and intelligent caching strategy using Redis and MongoDB for frequently accessed templates.",
+        "Led a 4-member intern team to develop a prompt-based research report generation that automated 70% of manual research tasks using chain-of-thought reasoning."
+      ]
+    },
+    {
+      "title": "Data Scientist & NLP Researcher",
+      "company": "Sabudh Foundation",
+      "location": "Punjab, India",
+      "dates": "Jul 2023 - Jan 2024",
+      "bullets": [
+        "Automated 60% of manual document processing by developing intelligent OCR pipeline using Detectron2, spaCy NLP, and custom entity recognition, processing 10,000+ documents monthly with 94% accuracy.",
+        "Achieved 91%-line segmentation accuracy on damaged ancient manuscripts successfully digitizing 10,000+ historical documents for preservation project.",
+        "Collaborated with 8-member research team to document and present solutions to government officials, demonstrating 3x faster processing than existing solutions."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "DataDialect AI",
+      "description": "Talk to any database using natural language",
+      "dates": "Apr 2025 – Jul 2025",
+      "bullets": [
+        "Achieved 89% query accuracy on complex multi-table joins by implementing NL2SQL system using few-shot learning and semantic similarity matching.",
+        "Reduced database query time by 65% for non-technical users, eliminating need for SQL knowledge and saving 10+ hours weekly for business analysts.",
+        "Integrated with 4 database types (MySQL, PostgreSQL, MongoDB, Vector Databases)"
+      ]
+    },
+    {
+      "name": "Stanford STORM API Wrapper",
+      "description": "Knowledge curation system",
+      "dates": "Jan 2025 – Mar 2025",
+      "bullets": [
+        "Wrapped Stanford STORM research pipeline into REST API using multi-LLM orchestration (GPT-4/Claude) via LangChain, handling 500+ daily requests with streaming responses.",
+        "Reduced deployment time by 75% through Docker containerization and FastAPI async endpoints, enabling researchers to generate comprehensive reports in 5 minutes vs 20 minutes."
+      ]
+    }
+  ],
+  "competitions": [
+    {
+      "name": "CS Demo Day Participant",
+      "organization": "University of Windsor",
+      "location": "Windsor, ON",
+      "date": "Apr 2025",
+      "bullets": [
+        "Showcased EduMetrics project to 200+ industry professionals and academic faculty."
+      ]
+    },
+    {
+      "name": "WinHacks 2025",
+      "organization": "University of Windsor",
+      "location": "Windsor, ON",
+      "date": "Jan 2025",
+      "bullets": [
+        "Prototyped AI-powered solution in 48-hour hackathon emphasizing rapid prototyping skills."
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Dataiku Advance Designer, Developer Certificate, ML Practitioner",
+      "date": "Feb 2025"
+    },
+    {
+      "name": "Google Data Analytics Professional Certificate – Coursera",
+      "date": "Dec 2024"
+    },
+    {
+      "name": "Selenium Essential Training - LinkedIn Learning",
+      "date": "Oct 2024"
+    },
+    {
+      "name": "Microsoft Power BI Desktop for Business Intelligence – Udemy",
+      "date": "Mar 2023"
+    },
+    {
+      "name": "TCS iON Career Edge - Soft Skills Development",
+      "date": "Feb 2023"
+    }
+  ]
+}
