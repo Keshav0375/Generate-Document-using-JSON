@@ -1,6 +1,5 @@
 """
-Quick Start Script for Resume Generator
-Main entry point for the application with all features integrated
+Updated Main Script with Template Support
 """
 
 import os
@@ -10,414 +9,233 @@ import argparse
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+from enhanced_generator import TemplateResumeGenerator
+from template_analyzer import TemplateAnalyzer
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 def check_dependencies():
-    """Check if all required dependencies are installed"""
-    required_packages = {
-        'docx': 'python-docx',
-        'docx2pdf': 'docx2pdf',
-        'streamlit': 'streamlit'
-    }
-
+    """Check if required dependencies are installed"""
+    required = ['docx', 'docx2pdf', 'streamlit']
     missing = []
-    for module, package in required_packages.items():
+
+    for module in required:
         try:
             __import__(module)
         except ImportError:
-            missing.append(package)
+            missing.append(module)
 
     if missing:
-        print("⚠️ Missing dependencies detected!")
-        print(f"Please install: {', '.join(missing)}")
-        print(f"\nRun: pip install {' '.join(missing)}")
+        print(f"⚠️ Missing: {', '.join(missing)}")
+        print(f"Run: pip install {' '.join(missing)}")
         return False
-
     return True
 
+def setup_directories():
+    """Create project directories"""
+    dirs = ['output', 'data', 'templates']
+    for d in dirs:
+        Path(d).mkdir(exist_ok=True)
+    print("✅ Directories created")
 
-def create_project_structure():
-    """Create necessary directories and files"""
-    directories = ['output', 'backups', 'templates', 'data']
-
-    for dir_name in directories:
-        Path(dir_name).mkdir(exist_ok=True)
-
-    print("✅ Project structure created")
-
-
-def create_sample_resume_json():
-    """Create a sample resume JSON file if it doesn't exist"""
-    resume_data = {
-        "header": {
-            "name": "Keshav Arri",
-            "phone": "647-227-1538",
-            "email": "arri@uwindsor.ca",
-            "location": "Ontario, Canada",
-            "linkedin": "https://linkedin.com/in/keshav-arri",
-            "portfolio": "https://keshavarri.com",
-            "github": "https://github.com/keshavarri"
-        },
-        "technical_skills": {
-            "Languages": "Python, SQL, C/C++, Java, Bash/Shell Scripting, HTML, CSS",
-            "Databases": "MySQL, PostgreSQL, MongoDB, Pinecone, Weaviate, Milvus, Snowflake, Redis",
-            "AI/ML": "PyTorch, TensorFlow, XGBoost, Hugging Face, LangChain, LangGraph, OpenCV, RAG",
-            "Cloud/Dev": "AWS, Azure, GCP, Docker, FastAPI, React, Git, CI/CD Pipelines, RESTful APIs",
-            "Related skills": "ETL Pipelines, Fine-tuning LLMs, Prompt Engineering, Data Modelling, A/B Testing, NER, OCR, Socket Programming, Data Structures & Algorithms"
-        },
-        "education": [
-            {
-                "degree": "Master of Applied Computing — Specialization: Artificial Intelligence",
-                "school": "University of Windsor",
-                "location": "Ontario, Canada",
-                "dates": "Jan 2025 - Present",
-                "gpa": "",
-                "notes": ["Final Semester Requires a 4 to 8 months Internship Starting Jan 2026"]
-            },
-            {
-                "degree": "Bachelor of Technology in Computer Science and Engineering",
-                "school": "Guru Nanak Dev Engineering College",
-                "location": "Punjab, India",
-                "dates": "Sep 2020 - Sep 2024",
-                "gpa": "SGPA 8.13/10",
-                "notes": []
-            }
-        ],
-        "experience": [
-            {
-                "title": "AI ML Engineer",
-                "company": "Slideoo",
-                "location": "Bangalore, India",
-                "dates": "Feb 2024 - Feb 2025",
-                "bullets": [
-                    "Engineered multimodal pipeline converting text, documents, websites and YouTube URLs into PowerPoint presentations, achieving 83%-time reduction to 30 seconds vs competitor's 3-min turnaround, helping secure seed funding.",
-                    "Scaled system to handle 10x traffic growth by implementing distributed architecture using OpenAI GPT and Claude model with multi-threading across Azure Web Apps, AWS Lambda and Bedrock, achieving 99% uptime.",
-                    "Improved LLM response accuracy by 25% and reduced API costs by 40% through optimized prompt engineering, few-shot learning and intelligent caching strategy using Redis and MongoDB for frequently accessed templates.",
-                    "Led a 4-member intern team to develop a prompt-based research report generation that automated 70% of manual research tasks using chain-of-thought reasoning."
-                ]
-            },
-            {
-                "title": "Data Scientist & NLP Researcher",
-                "company": "Sabudh Foundation",
-                "location": "Punjab, India",
-                "dates": "Jul 2023 - Jan 2024",
-                "bullets": [
-                    "Automated 60% of manual document processing by developing intelligent OCR pipeline using Detectron2, spaCy NLP, and custom entity recognition, processing 10,000+ documents monthly with 94% accuracy.",
-                    "Achieved 91%-line segmentation accuracy on damaged ancient manuscripts successfully digitizing 10,000+ historical documents for preservation project.",
-                    "Collaborated with 8-member research team to document and present solutions to government officials, demonstrating 3x faster processing than existing solutions."
-                ]
-            }
-        ],
-        "projects": [
-            {
-                "name": "DataDialect AI",
-                "description": "Talk to any database using natural language",
-                "dates": "Apr 2025 – Jul 2025",
-                "bullets": [
-                    "Achieved 89% query accuracy on complex multi-table joins by implementing NL2SQL system using few-shot learning and semantic similarity matching.",
-                    "Reduced database query time by 65% for non-technical users, eliminating need for SQL knowledge and saving 10+ hours weekly for business analysts.",
-                    "Integrated with 4 database types (MySQL, PostgreSQL, MongoDB, Vector Databases)"
-                ]
-            },
-            {
-                "name": "Stanford STORM API Wrapper",
-                "description": "Knowledge curation system",
-                "dates": "Jan 2025 – Mar 2025",
-                "bullets": [
-                    "Wrapped Stanford STORM research pipeline into REST API using multi-LLM orchestration (GPT-4/Claude) via LangChain, handling 500+ daily requests with streaming responses.",
-                    "Reduced deployment time by 75% through Docker containerization and FastAPI async endpoints, enabling researchers to generate comprehensive reports in 5 minutes vs 20 minutes."
-                ]
-            }
-        ],
-        "competitions": [
-            {
-                "name": "CS Demo Day Participant",
-                "organization": "University of Windsor",
-                "location": "Windsor, ON",
-                "date": "Apr 2025",
-                "bullets": ["Showcased EduMetrics project to 200+ industry professionals and academic faculty."]
-            },
-            {
-                "name": "WinHacks 2025",
-                "organization": "University of Windsor",
-                "location": "Windsor, ON",
-                "date": "Jan 2025",
-                "bullets": ["Prototyped AI-powered solution in 48-hour hackathon emphasizing rapid prototyping skills."]
-            }
-        ],
-        "certifications": [
-            {"name": "Dataiku Advance Designer, Developer Certificate, ML Practitioner", "date": "Feb 2025"},
-            {"name": "Google Data Analytics Professional Certificate – Coursera", "date": "Dec 2024"},
-            {"name": "Selenium Essential Training - LinkedIn Learning", "date": "Oct 2024"},
-            {"name": "Microsoft Power BI Desktop for Business Intelligence – Udemy", "date": "Mar 2023"},
-            {"name": "TCS iON Career Edge - Soft Skills Development", "date": "Feb 2023"}
-        ]
-    }
-
-    if not os.path.exists('resume_data.json'):
-        with open('resume_data.json', 'w', encoding='utf-8') as f:
-            json.dump(resume_data, f, indent=2)
-        print("✅ Created sample resume_data.json")
-        return True
-    else:
-        print("ℹ️ resume_data.json already exists")
-        return False
-
-
-def quick_generate():
-    """Quick generation of resume with default settings"""
+def quick_generate_with_template():
+    """Generate resume using template if available"""
     try:
-        from resume_generator import ResumeGenerator, DocumentConfig
+        generator = TemplateResumeGenerator()
 
-        # Check if JSON exists
-        if not os.path.exists('resume_data.json'):
-            print("❌ resume_data.json not found. Creating sample...")
-            create_sample_resume_json()
+        # Look for template in data/ directory
+        template_path = None
+        for ext in ['.docx', '.doc']:
+            for name in ['template', 'sample', 'example']:
+                path = f"data/{name}{ext}"
+                if os.path.exists(path):
+                    template_path = path
+                    break
+            if template_path:
+                break
 
-        # Create generator with default config
-        config = DocumentConfig()
-        generator = ResumeGenerator(config)
-
-        # Generate resume
-        print("📄 Generating resume...")
-        word_path, pdf_path = generator.generate_from_json(
-            'resume_data.json',
-            output_dir='./output',
-            base_name='resume'
-        )
-
-        print("✅ Resume generated successfully!")
-        print(f"📄 Word: {word_path}")
-        if pdf_path:
-            print(f"📄 PDF: {pdf_path}")
+        if template_path:
+            print(f"📋 Using template: {template_path}")
+            word_file, pdf_file = generator.generate_with_template(
+                json_path="resume_data.json",
+                template_path=template_path,
+                output_dir="output"
+            )
         else:
-            print("⚠️ PDF generation failed (docx2pdf may not be installed)")
+            print("📋 No template found, using default formatting")
+            word_file, pdf_file = generator.generate_with_template(
+                json_path="resume_data.json",
+                output_dir="output"
+            )
 
-        return True
+        print(f"✅ Word: {word_file}")
+        if pdf_file:
+            print(f"✅ PDF: {pdf_file}")
+        else:
+            print("⚠️ PDF generation failed")
 
     except Exception as e:
         print(f"❌ Error: {str(e)}")
-        return False
 
+def analyze_template():
+    """Analyze template document"""
+    template_files = []
+    data_dir = Path("data")
 
-def run_web_interface():
-    """Launch the Streamlit web interface"""
+    if data_dir.exists():
+        template_files = list(data_dir.glob("*.docx")) + list(data_dir.glob("*.doc"))
+
+    if not template_files:
+        print("❌ No template files found in data/ directory")
+        return
+
+    print("📋 Found templates:")
+    for i, file in enumerate(template_files):
+        print(f"  {i+1}. {file.name}")
+
+    choice = input(f"Choose template (1-{len(template_files)}): ").strip()
+
     try:
-        import streamlit.web.cli as stcli
-        sys.argv = ["streamlit", "run", "app.py"]
-        stcli.main()
-    except ImportError:
-        print("❌ Streamlit not installed. Please run: pip install streamlit")
-        return False
+        idx = int(choice) - 1
+        if 0 <= idx < len(template_files):
+            template_path = template_files[idx]
 
+            analyzer = TemplateAnalyzer()
+            stats = analyzer.analyze_document(str(template_path))
 
-def run_cli_interface():
-    """Run the command-line interface"""
-    from resume_generator import ResumeGenerator, DocumentConfig
-    from utils import JSONValidator, BackupManager, StatisticsGenerator
+            output_file = f"analysis_{template_path.stem}.json"
+            analyzer.save_analysis(stats, output_file)
 
-    parser = argparse.ArgumentParser(
-        description='Resume Generator - Command Line Interface',
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
+            print(f"✅ Analysis saved to {output_file}")
 
-    parser.add_argument(
-        'action',
-        choices=['generate', 'validate', 'backup', 'stats', 'clean'],
-        help='Action to perform'
-    )
+            # Show summary
+            print("\n📊 Template Summary:")
+            print(f"  Paragraphs: {stats['document_info']['total_paragraphs']}")
+            print(f"  Styles: {len(stats['styles'])}")
 
-    parser.add_argument(
-        '-i', '--input',
-        default='resume_data.json',
-        help='Input JSON file (default: resume_data.json)'
-    )
+            patterns = stats.get('formatting_patterns', {})
+            if patterns.get('common_fonts'):
+                fonts = patterns['common_fonts']
+                main_font = max(fonts, key=fonts.get)
+                print(f"  Main font: {main_font}")
 
-    parser.add_argument(
-        '-o', '--output',
-        default='./output',
-        help='Output directory (default: ./output)'
-    )
+        else:
+            print("❌ Invalid choice")
+    except (ValueError, IndexError):
+        print("❌ Invalid choice")
 
-    parser.add_argument(
-        '-n', '--name',
-        default='resume',
-        help='Output filename base (default: resume)'
-    )
+def run_cli():
+    """Enhanced CLI with template support"""
+    parser = argparse.ArgumentParser(description='Enhanced Resume Generator')
 
-    parser.add_argument(
-        '--word-only',
-        action='store_true',
-        help='Generate only Word document (skip PDF)'
-    )
+    parser.add_argument('action', choices=['generate', 'analyze', 'help'],
+                       help='Action to perform')
+    parser.add_argument('-j', '--json', default='resume_data.json',
+                       help='Resume JSON file')
+    parser.add_argument('-t', '--template', help='Template Word file')
+    parser.add_argument('-o', '--output', default='output',
+                       help='Output directory')
 
     args = parser.parse_args()
 
     if args.action == 'generate':
-        # Generate resume
-        config = DocumentConfig()
-        generator = ResumeGenerator(config)
-
         try:
-            if args.word_only:
-                with open(args.input, 'r') as f:
-                    data = json.load(f)
-                word_path = os.path.join(args.output, f"{args.name}.docx")
-                generator.generate_word(data, word_path)
-                print(f"✅ Generated: {word_path}")
-            else:
-                word_path, pdf_path = generator.generate_from_json(
-                    args.input,
-                    output_dir=args.output,
-                    base_name=args.name
-                )
-                print(f"✅ Word: {word_path}")
-                if pdf_path:
-                    print(f"✅ PDF: {pdf_path}")
+            generator = TemplateResumeGenerator()
+            word_file, pdf_file = generator.generate_with_template(
+                json_path=args.json,
+                template_path=args.template,
+                output_dir=args.output
+            )
+            print(f"✅ Generated: {word_file}")
+            if pdf_file:
+                print(f"✅ PDF: {pdf_file}")
         except Exception as e:
             print(f"❌ Error: {str(e)}")
-            return False
 
-    elif args.action == 'validate':
-        # Validate JSON
-        validator = JSONValidator()
+    elif args.action == 'analyze':
+        if not args.template:
+            print("❌ Template file required for analysis")
+            return
+
         try:
-            with open(args.input, 'r') as f:
-                data = json.load(f)
+            analyzer = TemplateAnalyzer()
+            stats = analyzer.analyze_document(args.template)
 
-            is_valid, errors = validator.validate_structure(data)
-            if is_valid:
-                print("✅ JSON is valid!")
-                cleaned = validator.clean_data(data)
-                print("ℹ️ Data has been cleaned and normalized")
-            else:
-                print("❌ JSON validation failed:")
-                for error in errors:
-                    print(f"  - {error}")
+            output_file = f"analysis_{Path(args.template).stem}.json"
+            analyzer.save_analysis(stats, output_file)
+            print(f"✅ Analysis saved to {output_file}")
         except Exception as e:
             print(f"❌ Error: {str(e)}")
-            return False
 
-    elif args.action == 'backup':
-        # Create backup
-        backup_mgr = BackupManager()
-        try:
-            with open(args.input, 'r') as f:
-                data = json.load(f)
+    elif args.action == 'help':
+        print("""
+Enhanced Resume Generator Commands:
 
-            backup_path = backup_mgr.create_backup(data, args.name)
-            print(f"✅ Backup created: {backup_path}")
+generate    Generate resume from JSON
+  -j JSON_FILE     Resume data file (default: resume_data.json)
+  -t TEMPLATE      Template Word file (optional)
+  -o OUTPUT_DIR    Output directory (default: output)
 
-            # List all backups
-            backups = backup_mgr.list_backups()
-            print(f"\n📁 Total backups: {len(backups)}")
-            for backup in backups[:5]:  # Show last 5
-                print(f"  - {backup['filename']} ({backup['modified']})")
-        except Exception as e:
-            print(f"❌ Error: {str(e)}")
-            return False
+analyze     Analyze template document
+  -t TEMPLATE      Template Word file (required)
 
-    elif args.action == 'stats':
-        # Generate statistics
-        try:
-            with open(args.input, 'r') as f:
-                data = json.load(f)
+Examples:
+  python main.py generate -j resume_data.json -t data/template.docx
+  python main.py analyze -t data/template.docx
+        """)
 
-            stats = StatisticsGenerator.analyze_resume(data)
-            print("\n📊 Resume Statistics:")
-            print(f"  Total words: {stats['total_word_count']}")
-            print(f"  Bullet points: {stats['bullet_points']}")
-            print(f"  Skills: {stats['skills_count']}")
-
-            if 'sections' in stats:
-                print("\n  Sections:")
-                for section, info in stats['sections'].items():
-                    print(f"    {section.capitalize()}:")
-                    for key, value in info.items():
-                        print(f"      - {key}: {value}")
-        except Exception as e:
-            print(f"❌ Error: {str(e)}")
-            return False
-
-    elif args.action == 'clean':
-        # Clean and format JSON
-        validator = JSONValidator()
-        try:
-            with open(args.input, 'r') as f:
-                data = json.load(f)
-
-            cleaned = validator.clean_data(data)
-
-            # Save cleaned version
-            output_file = args.input.replace('.json', '_cleaned.json')
-            with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(cleaned, f, indent=2)
-
-            print(f"✅ Cleaned JSON saved: {output_file}")
-        except Exception as e:
-            print(f"❌ Error: {str(e)}")
-            return False
-
-    return True
-
+def run_web_interface():
+    """Launch Streamlit with template support"""
+    try:
+        os.system("streamlit run app.py")
+    except:
+        print("❌ Streamlit not available")
 
 def main():
-    """Main entry point for the application"""
+    """Main entry point with template support"""
     print("=" * 50)
-    print("🚀 Resume Generator - Quick Start")
+    print("🚀 Enhanced Resume Generator with Template Support")
     print("=" * 50)
 
-    # Check dependencies
     if not check_dependencies():
-        print("\n⚠️ Please install missing dependencies first")
+        print("\n⚠️ Install missing dependencies first")
         sys.exit(1)
 
-    # Create project structure
-    create_project_structure()
+    setup_directories()
 
-    # Create sample JSON if needed
-    create_sample_resume_json()
+    # Create sample data if needed
+    if not os.path.exists('resume_data.json'):
+        print("📝 Creating sample resume_data.json...")
+        # Use the existing resume_data.json content
+        print("✅ Please add your resume_data.json file")
 
-    print("\nChoose an option:")
-    print("1. Quick Generate (generate resume with default settings)")
-    print("2. Web Interface (launch Streamlit app)")
-    print("3. Command Line (advanced options)")
-    print("4. Setup Only (exit after setup)")
+    print("\nOptions:")
+    print("1. Quick Generate (with template if available)")
+    print("2. Analyze Template")
+    print("3. Web Interface")
+    print("4. Command Line Help")
+    print("5. Exit")
 
-    choice = input("\nEnter your choice (1-4): ").strip()
+    choice = input("\nChoose (1-5): ").strip()
 
     if choice == '1':
-        quick_generate()
+        quick_generate_with_template()
     elif choice == '2':
-        print("\n🌐 Launching web interface...")
-        print("Press Ctrl+C to stop the server")
-        run_web_interface()
+        analyze_template()
     elif choice == '3':
-        print("\n💻 Command-line interface")
-        print("Run with -h flag for help: python quickstart.py -h")
-        run_cli_interface()
+        print("🌐 Launching web interface...")
+        run_web_interface()
     elif choice == '4':
-        print("\n✅ Setup complete! You can now:")
-        print("  - Edit resume_data.json with your information")
-        print("  - Run 'streamlit run app.py' for web interface")
-        print("  - Run 'python quickstart.py' for quick generation")
+        run_cli()
+    elif choice == '5':
+        print("👋 Goodbye!")
     else:
-        print("\n❌ Invalid choice")
-        sys.exit(1)
-
+        print("❌ Invalid choice")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        # If arguments provided, run CLI mode
-        run_cli_interface()
+        run_cli()
     else:
-        # Otherwise, run interactive mode
         main()
